@@ -44,7 +44,7 @@ router.route('/users')
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-app.use('/api', router);
+// app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
