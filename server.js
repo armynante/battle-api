@@ -11,13 +11,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = 8080;
+var private_ip = 10.132.125.55;
 
 // ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
 router.get('/', function(req, res, next) {
-    res.end("Hello, World!");
+    res.end("Hello, World!!!");
 });
 
 router.route('/users')
@@ -45,5 +46,5 @@ app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port);
+app.listen(port,private_ip);
 console.log('Server started on port ' + port);
