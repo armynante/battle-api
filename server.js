@@ -6,6 +6,7 @@ var mongoose   = require('mongoose');
 //User Models
 var User       = require('./models/user');
 mongoose.connect('mongodb://10.132.126.169/battle-api');
+// mongoose.connect('mongodb://localhost/battle-api');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -44,7 +45,7 @@ router.route('/users')
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-// app.use('/api', router);
+app.use(router);
 
 // START THE SERVER
 // =============================================================================
