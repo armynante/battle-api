@@ -18,6 +18,7 @@ var private_ip = '10.132.125.55';
 var router = express.Router();              // get an instance of the express Router
 
 router.get('/', function(req, res, next) {
+  console.log('hitting home');
     res.end("Hello, World!!!");
 });
 
