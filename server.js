@@ -1,16 +1,18 @@
 var express    = require('express');        // call express
-var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var morgan = require('morgan');
 
 var logger = morgan('combined')
 
+var app        = express();                 // define our app using express
+
 
 //User Models
 var User       = require('./models/user');
-mongoose.connect('mongodb://10.132.126.169/battle-api');
-// mongoose.connect('mongodb://localhost/battle-api');
+var enviorment = process.env.CURRENT_ENV;
+if (enviorment == 'production') mongoose.connect('mongodb://10.132.126.169/battle-api');
+if (enviorment == 'development') mongoose.connect('mongodb://localhost/battle-api');
 
 // ADD MIDDLEWARE
 app.use(morgan('combined'))
@@ -49,5 +51,6 @@ app.use('/api',router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port, private_ip);
+if (enviorment == 'production') app.listen(port, private_ip);
+if (enviorment == 'development') app.listen(port);
 console.log('Server started on port ' + port);
