@@ -46,5 +46,5 @@ app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port,private_ip);
+app.listen(port);
 console.log('Server started on port ' + port);
