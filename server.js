@@ -48,13 +48,13 @@ router.route('/users')
         })
       });
 
-router.route('/game')
+router.route('/games')
     .post(function(req, res) {
         var game = new Game();
         var gameId = Math.floor(Math.random() * 1000000000);
         game.game_number = gameId;
 
-        user.save(function(err) {
+        game.save(function(err) {
             if (err) res.send(err);
 
             res.json({ message: 'New game created!' });
