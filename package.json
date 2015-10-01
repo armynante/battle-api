@@ -4,6 +4,7 @@
   "description": "An api for a node battleship game",
   "main": "server.js",
   "dependencies": {
+    "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "mongoose": "^4.1.9",
     "morgan": "^1.6.1"
