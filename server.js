@@ -10,8 +10,8 @@ mongoose.connect('mongodb://localhost/test');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = 8080;
-var private_ip = 10.132.125.55;
+var port = '8080';
+var private_ip = '10.132.125.55';
 
 // ROUTES FOR OUR API
 // =============================================================================
