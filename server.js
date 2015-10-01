@@ -32,7 +32,7 @@ router.route('/users')
         user.save(function(err) {
             if (err) res.send(err);
 
-            res.json({ message: 'User created!!' });
+            res.json({ message: 'User created!' });
         })
     })
     .get(function(req,res) {
