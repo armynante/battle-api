@@ -1,26 +1,29 @@
-var express    = require('express');        // call express
+var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var morgan = require('morgan');
 
+
+//APP SETTUP
+var port = '8080';
+var private_ip = '10.132.125.55';
 var logger = morgan('combined')
-
-var app        = express();                 // define our app using express
-
-
-//User Models
-var User       = require('./models/user');
 var enviorment = process.env.CURRENT_ENV;
+var app        = express();
+
+
+//MODELS
+var User       = require('./models/user');
+
 if (enviorment == 'production') mongoose.connect('mongodb://10.132.126.169/battle-api');
 if (enviorment == 'development') mongoose.connect('mongodb://localhost/battle-api');
+
 
 // ADD MIDDLEWARE
 app.use(morgan('combined'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = '8080';
-var private_ip = '10.132.125.55';
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -44,8 +47,27 @@ router.route('/users')
         })
       });
 
+router.route('/game')
+    .post(function(req, res) {
+        var user = new Game();
+        var gameId = Math.floor(Math.random() * 1000000000);
+        user.gamenumber = gameId;
 
-// REGISTER OUR ROUTES -------------------------------
+        user.save(function(err) {
+            if (err) res.send(err);
+
+            res.json({ message: 'New game created!' });
+        })
+    })
+    .get(function(req,res) {
+        Game.find(function(err,games) {
+          if(err) req.send(err);
+          res.send(games);
+        })
+      });
+
+
+// REGISTER OUR ROUTES ---------------------------------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api',router);
 
