@@ -14,6 +14,7 @@ var app        = express();
 
 //MODELS
 var User       = require('./models/user');
+var Game       = require('./models/game');
 
 if (enviorment == 'production') mongoose.connect('mongodb://10.132.126.169/battle-api');
 if (enviorment == 'development') mongoose.connect('mongodb://localhost/battle-api');
@@ -49,9 +50,9 @@ router.route('/users')
 
 router.route('/game')
     .post(function(req, res) {
-        var user = new Game();
+        var game = new Game();
         var gameId = Math.floor(Math.random() * 1000000000);
-        user.gamenumber = gameId;
+        game.game_number = gameId;
 
         user.save(function(err) {
             if (err) res.send(err);
