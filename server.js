@@ -18,7 +18,8 @@ var private_ip = '10.132.125.55';
 var router = express.Router();              // get an instance of the express Router
 
 router.get('/', function(req, res, next) {
-  console.log('hitting home');
+  console.log('hitting home')
+
     res.end("Hello, World!!!");
 });
 
@@ -47,5 +48,5 @@ app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================
-app.listen(port);
+app.listen(port,private_ip);
 console.log('Server started on port ' + port);
