@@ -5,7 +5,7 @@ var mongoose   = require('mongoose');
 
 //User Models
 var User       = require('./models/user');
-mongoose.connect('mongodb://104.131.117.3/battle-api');
+mongoose.connect('mongodb://10.132.126.169/battle-api');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
