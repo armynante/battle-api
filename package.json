@@ -4,12 +4,9 @@
   "description": "An api for a node battleship game",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.13.3"
-  },
-  "devDependencies": {
-    "body-parser": "^1.14.1",
     "express": "^4.13.3",
-    "mongoose": "^4.1.9"
+    "mongoose": "^4.1.9",
+    "morgan": "^1.6.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

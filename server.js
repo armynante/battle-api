@@ -2,12 +2,18 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var morgan = require('morgan');
+
+var logger = morgan('combined')
+
 
 //User Models
 var User       = require('./models/user');
 mongoose.connect('mongodb://10.132.126.169/battle-api');
 // mongoose.connect('mongodb://localhost/battle-api');
 
+// ADD MIDDLEWARE
+app.use(morgan('combined'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
