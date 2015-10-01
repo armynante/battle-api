@@ -10,7 +10,7 @@ mongoose.connect('mongodb://10.132.126.169/battle-api');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = '8080';
+var port = '80';
 var private_ip = '10.132.125.55';
 
 // ROUTES FOR OUR API
