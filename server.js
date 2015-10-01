@@ -26,7 +26,6 @@ var router = express.Router();              // get an instance of the express Ro
 
 router.get('/', function(req, res, next) {
   console.log('hitting home')
-
     res.end("Hello, World!!!");
 });
 
@@ -51,7 +50,7 @@ router.route('/users')
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-app.use(router);
+app.use('api',router);
 
 // START THE SERVER
 // =============================================================================
