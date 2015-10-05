@@ -12,12 +12,13 @@ var app        = express();
 var enviorment = process.env.CURRENT_ENV
 
 //MODELS
-var User       = require('./models/user');
-var Game       = require('./models/game');
-var Board      = require('./models/board');
-var BoardModel = require('./models/boardModel');
-var PlayerModel  = require('./models/playerModel');
-var GameModel  = require('./models/gameModel');
+var User                 = require('./models/user');
+var Game                 = require('./models/game');
+var Board                = require('./models/board');
+var BoardModel           = require('./models/boardModel');
+var PlayerModel          = require('./models/playerModel');
+var GameModel            = require('./models/gameModel');
+var FiringSolutionModel  = require('./models/FiringSolutionModel');
 
 if (enviorment == 'production') mongoose.connect(config.production_database);
 if (enviorment == 'development') mongoose.connect(config.development_database);
@@ -33,6 +34,13 @@ app.use(bodyParser.json());
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
+router.route('/resigter')
+  .post(function(req, res) {
+    User.save({email:req.body.email,password:req.body.password}, function(err,user) {
+      if err throw error;
+      res.json({success:true,user_id: user.id})
+    });
+  })
 router.route('/auth')
   .post(function(req, res) {
 
@@ -230,19 +238,20 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
       }
 
       else if (game) {
+
         if (!game.playersTurn) {
           res.json({ success: false, message: 'Not players turn.' });
           return;
         }
 
         var board = new BoardModel();
-        var player = new PlayerModel();
+        var ai = new PlayerModel();
 
         //derserialize the state
-        board.state = JSON.parse(game.player.board);
-        playerState = JSON.parse(game.player.shipState);
+        board.state = JSON.parse(game.ai.board);
+        aiState = JSON.parse(game.ai.shipState);
 
-        player.shipState = playerState;
+        ai.shipState = playerState;
 
         var r = parseInt(req.params.y_position);
         var c = parseInt(req.params.x_position);
@@ -251,17 +260,17 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
 
         if (hit) {
 
-          var sunk = player.damage(board.state[r][c].shipClass);
+          var sunk = ai.damage(board.state[r][c].shipClass);
           debugger;
 
           if (sunk) {
             var shipSunk = board.state[r][c].shipClass;
-            var won = player.shipStateInfo('sunk');
+            var won = ai.shipStateInfo('sunk');
           }
         }
 
-        game.player.shipState = JSON.stringify(playerState);
-        game.player.board = JSON.stringify(board.state);
+        game.ai.shipState = JSON.stringify(aiState);
+        game.ai.board = JSON.stringify(board.state);
         game.playersTurn = false;
         game.round += 1;
 
@@ -293,6 +302,39 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
       }
     })
   });
+
+router.route('/games/:game_id/ai_fire')
+  .post(function(req, res) {
+
+    Game.findOne({
+      _id: req.params.game_id
+    }, function(err, game) {
+
+      if (err) throw err;
+
+      if (!game) {
+        res.json({ success: false, message: 'Game not found.' });
+        return;
+      }
+
+      else if (game) {
+
+        if (game.playersTurn) {
+          res.json({ success: false, message: 'Not ai\'s turn.' });
+          return;
+        }
+
+        var board = new BoardModel();
+        var player = new PlayerModel();
+        var fs = new FiringSolutionModel();
+
+        //derserialize the state
+        board.state = JSON.parse(game.player.board);
+        playerState = JSON.parse(game.player.shipState);
+
+        player.shipState = playerState;
+
+        fs =
 
 
 // REGISTER OUR ROUTES ---------------------------------------------------------
