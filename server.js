@@ -38,9 +38,10 @@ router.route('/resigter')
   .post(function(req, res) {
     User.save({email:req.body.email,password:req.body.password}, function(err,user) {
       if (err) throw error;
-      res.json({success:true,user_id: user.id})
+      res.json({success:true,user_id: user.id});
     });
-  })
+  });
+
 router.route('/auth')
   .post(function(req, res) {
 
@@ -303,38 +304,38 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
     })
   });
 
-router.route('/games/:game_id/ai_fire')
-  .post(function(req, res) {
-
-    Game.findOne({
-      _id: req.params.game_id
-    }, function(err, game) {
-
-      if (err) throw err;
-
-      if (!game) {
-        res.json({ success: false, message: 'Game not found.' });
-        return;
-      }
-
-      else if (game) {
-
-        if (game.playersTurn) {
-          res.json({ success: false, message: 'Not ai\'s turn.' });
-          return;
-        }
-
-        var board = new BoardModel();
-        var player = new PlayerModel();
-        var fs = new FiringSolutionModel();
-
-        //derserialize the state
-        board.state = JSON.parse(game.player.board);
-        playerState = JSON.parse(game.player.shipState);
-
-        player.shipState = playerState;
-
-        fs =
+// router.route('/games/:game_id/ai_fire')
+//   .post(function(req, res) {
+//
+//     Game.findOne({
+//       _id: req.params.game_id
+//     }, function(err, game) {
+//
+//       if (err) throw err;
+//
+//       if (!game) {
+//         res.json({ success: false, message: 'Game not found.' });
+//         return;
+//       }
+//
+//       else if (game) {
+//
+//         if (game.playersTurn) {
+//           res.json({ success: false, message: 'Not ai\'s turn.' });
+//           return;
+//         }
+//
+//         var board = new BoardModel();
+//         var player = new PlayerModel();
+//         var fs = new FiringSolutionModel();
+//
+//         //derserialize the state
+//         board.state = JSON.parse(game.player.board);
+//         playerState = JSON.parse(game.player.shipState);
+//
+//         player.shipState = playerState;
+//
+//         fs =
 
 
 // REGISTER OUR ROUTES ---------------------------------------------------------
