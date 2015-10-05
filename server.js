@@ -37,7 +37,7 @@ var router = express.Router();              // get an instance of the express Ro
 router.route('/resigter')
   .post(function(req, res) {
     User.save({email:req.body.email,password:req.body.password}, function(err,user) {
-      if err throw error;
+      if (err) throw error;
       res.json({success:true,user_id: user.id})
     });
   })
