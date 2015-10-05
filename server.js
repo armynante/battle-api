@@ -18,7 +18,7 @@ var Board                = require('./models/board');
 var BoardModel           = require('./models/boardModel');
 var PlayerModel          = require('./models/playerModel');
 var GameModel            = require('./models/gameModel');
-var FiringSolutionModel  = require('./models/FiringSolutionModel');
+// var FiringSolutionModel  = require('./models/FiringSolutionModel');
 
 if (enviorment == 'production') mongoose.connect(config.production_database);
 if (enviorment == 'development') mongoose.connect(config.development_database);
