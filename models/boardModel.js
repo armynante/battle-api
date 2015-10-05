@@ -281,7 +281,6 @@ module.exports = function(){
       this.runPlacements = function(row, col, live, shipClass) {
           if (col >= 0 && row >= 0 && col <= 9 && row <= 9) {
               var position = _this.state[row][col];
-              debugger;
               if (position.vacant) {
                   if (live) {
                       _this.state[row][col].shipClass = shipClass;

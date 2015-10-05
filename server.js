@@ -209,11 +209,90 @@ router.route('/games/:game_id/place_boat/:boat_type/:x_postition/:y_position/:or
         game.save(function(err, game) {
 
           if (err) res.send(err);
-          res.json({ status: 'success', message: 'Boat placed.' });
+          res.json({ status: true, message: 'Boat placed.' });
         })
       }
     });
   })
+
+router.route('/games/:game_id/fire/:x_position/:y_position')
+  .post(function(req, res) {
+
+    Game.findOne({
+      _id: req.params.game_id
+    }, function(err, game) {
+
+      if (err) throw err;
+
+      if (!game) {
+        res.json({ success: false, message: 'Game not found.' });
+        return;
+      }
+
+      else if (game) {
+        if (!game.playersTurn) {
+          res.json({ success: false, message: 'Not players turn.' });
+          return;
+        }
+
+        var board = new BoardModel();
+        var player = new PlayerModel();
+
+        //derserialize the state
+        board.state = JSON.parse(game.player.board);
+        playerState = JSON.parse(game.player.shipState);
+
+        player.shipState = playerState;
+
+        var r = parseInt(req.params.y_position);
+        var c = parseInt(req.params.x_position);
+
+        var hit = board.fire(r,c);
+
+        if (hit) {
+
+          var sunk = player.damage(board.state[r][c].shipClass);
+          debugger;
+
+          if (sunk) {
+            var shipSunk = board.state[r][c].shipClass;
+            var won = player.shipStateInfo('sunk');
+          }
+        }
+
+        game.player.shipState = JSON.stringify(playerState);
+        game.player.board = JSON.stringify(board.state);
+        game.playersTurn = false;
+        game.round += 1;
+
+        game.save(function(err, game) {
+          var msgStrng = 'Volly was a '
+
+          if (hit) {
+
+            msgStrng += 'hit.';
+          } else {
+
+            msgStrng += 'miss';
+          }
+
+          if (sunk) {
+
+            msgStrng += ' You sunk the '+shipSunk+'!';
+            debugger;
+          }
+          if (won) {
+
+              msgStrng += ' You won the game!';
+          }
+
+          if (err) res.send(err);
+          res.json({ status: true, message: msgStrng });
+        })
+
+      }
+    })
+  });
 
 
 // REGISTER OUR ROUTES ---------------------------------------------------------
