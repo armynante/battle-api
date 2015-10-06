@@ -3,7 +3,8 @@ var Schema       = mongoose.Schema;
 
 var GameSchema   = new Schema({
     owner:  String,
-    board: String,
+    ai_board_id: String,
+    player_board_id: String,
     round: { type: Boolean, default: false },
     winner: String,
     round: { type: Number, default: 0 },

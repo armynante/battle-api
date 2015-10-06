@@ -4,6 +4,7 @@
   "description": "An api for a node battleship game",
   "main": "server.js",
   "dependencies": {
+    "async": "^1.4.2",
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "jsonwebtoken": "^5.4.0",

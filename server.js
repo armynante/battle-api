@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var morgan     = require('morgan');
 var jwt        = require('jsonwebtoken');
+var async      = require('async');
 var config     = require('./config.js');
 
 //APP SETTUP
@@ -18,7 +19,8 @@ var Board                = require('./models/board');
 var BoardModel           = require('./models/boardModel');
 var PlayerModel          = require('./models/playerModel');
 var GameModel            = require('./models/gameModel');
-// var FiringSolutionModel  = require('./models/FiringSolutionModel');
+var FiringSolutionModel  = require('./models/FiringSolutionModel');
+var SalvoModel           = require('./models/SalvoModel');
 
 if (enviorment == 'production') mongoose.connect(config.production_database);
 if (enviorment == 'development') mongoose.connect(config.development_database);
@@ -103,7 +105,7 @@ router.use(function(req, res, next) {
 });
 router.route('/users/:user_id/games')
 
-  .post(function(req, res) {
+  .get(function(req, res) {
     User.findOne({
       _id: req.params.user_id
     }, function(err, user) {
@@ -115,13 +117,15 @@ router.route('/users/:user_id/games')
       }
 
       else if (user) {
+
         var new_game = new Game();
+            new_game.owner = user.id;
 
         Board.random(function(err, board) {
-          new_game.board = board.id;
-          new_game.owner = user.id;
+          new_game.ai_board_id = board.id;
 
           new_game.ai.board = board.layout;
+
 
           new_game.save(function(err) {
             if (err) res.send(err);
@@ -131,6 +135,57 @@ router.route('/users/:user_id/games')
       }
     });
   })
+
+router.route('/users/:user_id/games/comp_vs_comp')
+
+  .get(function(req, res) {
+    User.findOne({
+      _id: req.params.user_id
+    }, function(err, user) {
+
+      if (err) throw err;
+
+      if (!user) {
+        res.json({ success: false, message: 'User not found.' });
+      }
+
+      else if (user) {
+
+        var new_game = new Game();
+            new_game.owner = user.id;
+
+        async.parallel([
+          function(callback) {
+
+            Board.random(function(err, board) {
+
+                new_game.ai_board_id = board.id;
+                new_game.ai.board = board.layout;
+                callback(err);
+            })
+          },
+          function(callback) {
+
+            Board.random(function(err, board) {
+
+                new_game.player_board_id = board.id;
+                new_game.player.board = board.layout;
+                callback(err);
+            })
+          }
+        ], function(err) {
+
+          if (err) throw errl
+            new_game.save(function(err) {
+
+              if (err) res.send(err);
+              res.json({ message: 'New comp_vs_comp game created!', game_id: new_game.id  });
+            })
+        });
+      }
+    });
+  })
+
 
   .get(function(req,res) {
     User.findOne({
@@ -333,9 +388,8 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
 //         board.state = JSON.parse(game.player.board);
 //         playerState = JSON.parse(game.player.shipState);
 //
-//         player.shipState = playerState;
-//
-//         fs =
+//         fs.autoFire('player');
+//          // auto create both boards
 
 
 // REGISTER OUR ROUTES ---------------------------------------------------------
