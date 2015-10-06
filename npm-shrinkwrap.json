@@ -2,6 +2,16 @@
   "name": "battle_api",
   "version": "1.0.0",
   "dependencies": {
+    "async": {
+      "version": "1.4.2",
+      "from": "async@",
+      "resolved": "https://registry.npmjs.org/async/-/async-1.4.2.tgz"
+    },
+    "bcryptjs": {
+      "version": "2.3.0",
+      "from": "bcryptjs@",
+      "resolved": "https://registry.npmjs.org/bcryptjs/-/bcryptjs-2.3.0.tgz"
+    },
     "body-parser": {
       "version": "1.14.1",
       "from": "body-parser@*",

@@ -31,6 +31,7 @@ module.exports  = function Player() {
 
     this.shipStateInfo = function(key) {
         var reducedObj;
+
         switch (key) {
             case 'sunk':
                 reducedObj = _this.shipState.reduce(function(a, b) {

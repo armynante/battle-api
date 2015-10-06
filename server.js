@@ -4,13 +4,14 @@ var mongoose   = require('mongoose');
 var morgan     = require('morgan');
 var jwt        = require('jsonwebtoken');
 var async      = require('async');
+var bcrypt      = require('bcryptjs');
 var config     = require('./config.js');
 
 //APP SETTUP
 var port       = '8080';
-var logger     = morgan('combined')
+var logger     = morgan('combined');
 var app        = express();
-var enviorment = process.env.CURRENT_ENV
+var enviorment = process.env.CURRENT_ENV;
 
 //MODELS
 var User                 = require('./models/user');
@@ -27,7 +28,7 @@ if (enviorment == 'development') mongoose.connect(config.development_database);
 
 
 // ADD MIDDLEWARE
-app.use(morgan('combined'))
+app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -36,11 +37,25 @@ app.use(bodyParser.json());
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
-router.route('/resigter')
+router.route('/register')
   .post(function(req, res) {
-    User.save({email:req.body.email,password:req.body.password}, function(err,user) {
+    User.findOne({email: req.body.email}, function(err, user) {
       if (err) throw error;
-      res.json({success:true,user_id: user.id});
+      if (user) {
+        res.json({success:false,message: 'Email already in use'});
+        return;
+      } else {
+        bcrypt.genSalt(10, function(err, salt) {
+          bcrypt.hash(req.body.password, salt, function(err, hash) {
+            user = new User({ email:req.body.email, password:hash });
+            user.save(function(err,user) {
+              if (err) throw error;
+              var token = jwt.sign(user, config.secret, { expiresIn: config.token_expriration });
+              res.json({success:true,user_id: user.id, token: token});
+            });
+          });
+        });
+      }
     });
   });
 
@@ -54,25 +69,25 @@ router.route('/auth')
       if (err) throw err;
 
       if (!user) {
-        res.json({ success: false, message: 'Authentication failed. User not found.' });
+        res.json({ success: false, message: 'Authentication failed. User not found or password wrong.' });
       }
 
       else if (user) {
 
-        if (user.password != req.body.password) {
-          res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-        } else {
+        bcrypt.compare(req.body.password, user.password, function(err, correctPass) {
+          if (!correctPass) {
 
-          var token = jwt.sign(user, config.secret, {
-            expiresIn: config.token_expriration
-          });
+            res.json({ success: false, message: 'Authentication failed. User not found or password wrong.' });
+          } else {
 
-          res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-          });
-        }
+            var token = jwt.sign(user, config.secret, { expiresIn: config.token_expriration });
+            res.json({
+              success: true,
+              message: 'Enjoy your token!',
+              token: token
+            });
+          }
+        });
       }
     });
   });
@@ -317,7 +332,6 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
         if (hit) {
 
           var sunk = ai.damage(board.state[r][c].shipClass);
-          debugger;
 
           if (sunk) {
             var shipSunk = board.state[r][c].shipClass;
@@ -328,7 +342,7 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
         game.ai.shipState = JSON.stringify(aiState);
         game.ai.board = JSON.stringify(board.state);
         game.playersTurn = false;
-        game.round += 1;
+        game.round++
 
         game.save(function(err, game) {
           var msgStrng = 'Volly was a '
@@ -359,39 +373,91 @@ router.route('/games/:game_id/fire/:x_position/:y_position')
     })
   });
 
-// router.route('/games/:game_id/ai_fire')
-//   .post(function(req, res) {
-//
-//     Game.findOne({
-//       _id: req.params.game_id
-//     }, function(err, game) {
-//
-//       if (err) throw err;
-//
-//       if (!game) {
-//         res.json({ success: false, message: 'Game not found.' });
-//         return;
-//       }
-//
-//       else if (game) {
-//
-//         if (game.playersTurn) {
-//           res.json({ success: false, message: 'Not ai\'s turn.' });
-//           return;
-//         }
-//
-//         var board = new BoardModel();
-//         var player = new PlayerModel();
-//         var fs = new FiringSolutionModel();
-//
-//         //derserialize the state
-//         board.state = JSON.parse(game.player.board);
-//         playerState = JSON.parse(game.player.shipState);
-//
-//         fs.autoFire('player');
-//          // auto create both boards
+router.route('/games/:game_id/ai_fire')
+  .post(function(req, res) {
+
+    Game.findOne({
+      _id: req.params.game_id
+    }, function(err, game) {
+
+      if (err) throw err;
+
+      if (!game) {
+        res.json({ success: false, message: 'Game not found.' });
+        return;
+      }
+
+      else if (game) {
+
+        // if (game.playersTurn) {
+        //   res.json({ success: false, message: 'Not ai\'s turn.' });
+        //   return;
+        // } else
+
+        //increment the round
+
+        var board = new BoardModel();
+        var player = new PlayerModel();
+
+        //derserialize the state
+        board.state = JSON.parse(game.player.board);
+        player.shipState = JSON.parse(game.player.shipState);
+        statusReport = JSON.parse(game.ai.statusReport);
+        var fs = new FiringSolutionModel(player,board);
+
+        if (game.over) {
+          game.ai.board = JSON.parse(game.ai.board);
+          game.ai.shipState = JSON.parse(game.ai.shipState);
+          game.player.board = JSON.parse(game.player.statusReport);
+          game.player.shipState = JSON.parse(game.player.shipState);
+          res.json({ success: false, message: 'Game is over', game: game });
+          return;
+        }
 
 
+        var report = fs.autoFire(); //FIRE ON THE PLAYER NOT THE AI
+
+        game.playersTurn = true;
+        game.lastMove = report.move;
+        game.ai.moves.push(report.move);
+
+        if (report.status === 'over') {
+
+          game.winner = 'AI';
+          game.over = true;
+          statusReport.lastHit = report.move;
+          statusReport.over = true;
+          statusReport.shipsSunk.push(report.ship);
+        } else if (report.status === 'sunk') {
+
+          statusReport.shipsSunk.push(report.ship);
+        } else if (report.status === 'hit') {
+
+          statusReport.lastHit = report.move;
+          statusReport.lastMove = report.move;
+        } else if (report.status === 'miss'){
+
+          statusReport.lastMove = report.move
+        } else {
+          res.json({ success: false, message: 'Error in game proccessing', game: gameState });
+          return;
+        }
+
+        var returnReport = statusReport;
+        game.round++;
+        returnReport.round = game.round;
+        game.player.shipState = JSON.stringify(fs.player.shipState);
+        game.player.board = JSON.stringify(fs.board.state);
+        game.ai.statusReport = JSON.stringify(statusReport);
+        game.save(function(err, game) {
+
+          if (err) throw err;
+
+          res.json({success:true, message: returnReport});
+        });
+      }
+    });
+  })
 // REGISTER OUR ROUTES ---------------------------------------------------------
 app.use('/api',router);
 
