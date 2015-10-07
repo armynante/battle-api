@@ -1,17 +1,30 @@
+
+require('node-jsx').install();
+
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var morgan     = require('morgan');
 var jwt        = require('jsonwebtoken');
 var async      = require('async');
-var bcrypt      = require('bcryptjs');
+var bcrypt     = require('bcryptjs');
 var config     = require('./config.js');
+var renderer   = require('react-engine');
+
 
 //APP SETTUP
 var port       = '8080';
 var logger     = morgan('combined');
 var app        = express();
 var enviorment = process.env.CURRENT_ENV;
+
+var engine     = renderer.server.create();
+
+app.engine('.jsx', engine);
+app.set('views', __dirname + '/public/views');
+app.set('view engine', 'jsx');
+app.set('view', renderer.expressView);
+
 
 //MODELS
 var User                 = require('./models/user');
@@ -28,6 +41,7 @@ if (enviorment == 'development') mongoose.connect(config.development_database);
 
 
 // ADD MIDDLEWARE
+app.use(express.static(__dirname + '/public'));
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -58,6 +72,7 @@ router.route('/register')
       }
     });
   });
+
 
 router.route('/auth')
   .post(function(req, res) {
@@ -458,7 +473,14 @@ router.route('/games/:game_id/ai_fire')
       }
     });
   })
+
 // REGISTER OUR ROUTES ---------------------------------------------------------
+app.get('', function(req, res) {
+  res.render('index', {
+    title: 'HOME'
+  });
+})
+
 app.use('/api',router);
 
 // START THE SERVER
