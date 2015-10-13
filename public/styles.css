@@ -1,25 +1,172 @@
 
 .ship {
   position: absolute;
-  right: 0px;
-  top: 143px;
+  right: -100px;
+  bottom: 1vh;
+  width:40vw;
+}
+.sub {
+  position: absolute;
+  left: 0vw;
+  bottom: 100vh;
 }
 
-.headerStyle = {
+.headerStyle {
   background: rgba(62,185,255,0.36);
   position: absolute;
   width: 100%;
-  height: 400px;
+  height: 60vh;
   margin: -8px;
+
+}
+.ocean {
+  background: #4A90E2;
+  position: absolute;
+  width: 100%;
+  height: 240vh;
+  margin: -8px;
+  top: 60vh;
 }
 
-.logoText = {
-  fontFamily: Lato-Hairline:
-  fontSize: 72px;
-  fontWeight: 100;
-  color: #000000;
-  lineHeight: 86px;
+.deepOcean {
   position: absolute;
-  top:20;
-  right: 0;
+  background: #2F5B8E;
+  width: 100%;
+  height: 100vh;
+  margin: -8px;
+  top: 280vh;
+  font-family: 'Lato';
+  font-weight: 100;
+
+}
+
+
+.headerText {
+  font-family: 'Lato';
+  font-weight: 100;
+  color:#464646;
+  margin-top: 25vh;
+  margin-left: 50px;
+  font-size: 1.5vw;
+
+}
+
+.anchorTest {
+  position: absolute;
+  top:80vh;
+}
+
+.btn {
+  -webkit-border-radius: 8;
+  -moz-border-radius: 8;
+  border-radius: 2px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 24px;
+  background: #9AD45F;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 10vw;
+  margin-top: 10px;
+  display: block;
+}
+.btn-box {
+  display: inline-block;
+}
+.btn:hover {
+  background: #B8E986;
+  text-decoration: none;
+}
+.auth-box {
+  position: absolute;
+  top: 30vh;
+  width: 50vw;
+  left: 25vw;
+  background: white;
+  box-sizing: border-box;
+  padding: 10px;
+  height: 25vh;
+  border: none;
+  font-family: 'Lato-Hairline';
+  box-sizing: border-box;
+
+}
+
+.focus-box input {
+  width: 50vw;
+  padding: 10px;
+  height: 40px;
+  border: none;
+  border-bottom: solid 4px #c9c9c9;
+  transition: border 1s;
+  outline: 0;
+
+}
+.focus-box .emailholder {
+  left: 25vw;
+  position: absolute;
+  top: 150vh;
+}
+.focus-box .passholder {
+  left: 25vw;
+  position: absolute;
+  top: 160vh;
+}
+
+
+.error  input:focus {
+  border-bottom: solid 5px #F4334A;
+  outline: 0;
+}
+
+input:focus {
+  border-bottom: solid 5px gray;
+  outline: 0;
+}
+
+.valid input:focus {
+  border-bottom: solid 5px #B8E986;
+  outline: 0;
+}
+
+.submitBtn {
+  position: absolute;
+  right: 2vw;
+  top: 5px;
+  width: auto;
+  color: #ffffff;
+  font-size: 24px;
+  background: #9AD45F;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: lato;
+  border-radius: 3px;
+  opacity: 0;
+}
+.submitBtn:hover {
+  background: #B8E986;
+}
+
+.submitBtn.valid {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+.submitBtn.error {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.logoText {
+  z-index: 100;
+  margin-left: 50px;
+  font-family: 'Lato-Hairline';
+  font-size: 10vh;
+  font-weight: 100;
+  color: #000000;
+  /*line-height: 86px;*/
+  position: fixed;
+  top:0;
+  left: 0;
 }

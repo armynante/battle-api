@@ -56,7 +56,7 @@ router.route('/register')
     User.findOne({email: req.body.email}, function(err, user) {
       if (err) throw error;
       if (user) {
-        res.json({success:false,message: 'Email already in use'});
+        res.json(400, {success:false,message: 'Email already in use'});
         return;
       } else {
         bcrypt.genSalt(10, function(err, salt) {
@@ -65,7 +65,7 @@ router.route('/register')
             user.save(function(err,user) {
               if (err) throw error;
               var token = jwt.sign(user, config.secret, { expiresIn: config.token_expriration });
-              res.json({success:true,user_id: user.id, token: token});
+              res.json(201, {success:true,user_id: user.id, token: token});
             });
           });
         });
