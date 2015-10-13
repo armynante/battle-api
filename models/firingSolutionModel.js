@@ -15,7 +15,7 @@ function Salvo(player,board) {
         _this.applyDamage();
 
     }
-
+    
     this.fireBlind = function() {
         var validShips = _this.player.shipsLeft(); // on a ship state
         var bestGuess = _this.board.calculateDensity(validShips); //on board
