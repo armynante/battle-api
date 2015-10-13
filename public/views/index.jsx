@@ -7,7 +7,7 @@ var Header = require('./header.jsx');
 
 var Index = React.createClass({
   getInitialState: function() {
-    return {windowHeight: null, windowState: null, scrollState:null, token:"", userId:""};
+    return {windowHeight: null, windowState: null, scrollState:null};
   },
   handleResize: function(e) {
       this.setState({windowHeight: e.srcElement.body.scrollTop});
@@ -28,7 +28,6 @@ var Index = React.createClass({
           </div>
           <Ocean windowHeight={this.state.windowHeight} userId={this.state.userId} token={this.state.token} windowRef={this.state.windowState}>
           </Ocean>
-          <DeepOcean windowHeight={this.state.windowHeight} userId={this.state.userId} token={this.state.token}></DeepOcean>
         </Page>
       )
   }

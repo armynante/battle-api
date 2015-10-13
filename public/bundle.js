@@ -32601,22 +32601,91 @@ document.addEventListener('DOMContentLoaded', function onLoad(){
 
 },{"./views/authBox.jsx":201,"./views/deepOcean.jsx":202,"./views/header.jsx":203,"./views/index.jsx":204,"./views/ocean.jsx":205,"./views/page.jsx":206,"./views/tokenBox.jsx":207,"react-engine/lib/client":9}],201:[function(require,module,exports){
 React = require('react');
+var tweenState = require('react-tween-state');
+var $ = require('jquery');
+
+function validateEmail(email) {
+    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return re.test(email);
+}
 
 var AuthBox = React.createClass( {displayName: "AuthBox",
+  mixins: [tweenState.Mixin],
+  getInitialState: function() {
+    return {value: '', valid: false, focused: false, error: false, dirty: false, emailValid: false, passValid: false, windowHeight: 0, topval: 0, scrollOn: false};
+  },
+  setVal: function(event) {
+    this.setState({value: event.target.value});
+  },
+  handleClick: function() {
+    _this = this;
+    this.setState({scrollOn: true});
+    var height = this.state.screenHeight;
+    this.tweenState('topval', {
+          beginValue: this.props.windowHeight,
+          easing: tweenState.easingTypes.easeInOutQuad,
+          duration: 1000,
+          endValue: this.props.windowRef.screen.height  + this.props.windowHeight,
+          onEnd: function() {
+              _this.setState({scrollOn: false});
+          }
+        });
+
+  },
+  testEmail: function(event) {
+    this.setState({dirty: true });
+    var val = event.target.value;
+    var valid = validateEmail(val);
+    this.setState({email: event.target.value, error: !valid, emailValid: valid, errorMsg:"Email is not valid."});
+  },
+  testPass: function(event) {
+    var val = event.target.value;
+    var valid = val.length > 7;
+    this.setState({pass: event.target.value, error: !valid, passValid: valid, errorMsg: "Passord needs to be at least 8 charachters long."});
+  },
+  getToken: function() {
+    _this = this;
+    $.ajax({
+      url: '/api/register',
+      method: 'POST',
+      data: { email: this.state.email, password: this.state.pass},
+      dataType: 'json',
+      success: function(data) {
+        _this.setState({error: false, errorMsg:""});
+        _this.props.handelAjax({token:data.token, userId:data.user_id});
+        _this.handleClick();
+      },
+      error: function(err) {
+        _this.setState({error: true, errorMsg:err.responseText});
+      },
+    });
+  },
   render: function(){
+    var value = this.state.value;
+    if (this.props.windowRef && this.state.scrollOn ) {
+      var val = this.getTweeningValue('topval')
+      this.props.windowRef.scrollTo(0 ,val);
+    }
     return(
-      React.createElement("div", {className: "auth-box"}, 
-        "Here is your token:", 
-        React.createElement("p", {className: "token"}, this.props.token), 
-        React.createElement("p", {className: "userId"}, this.props.userId)
-      )
+      React.createElement("div", {className: "focus-box"}, 
+            React.createElement("div", {className: "errorholder" + (this.state.error ? " errorMsg" : " ") }, 
+                this.state.errorMsg
+            ), 
+            React.createElement("div", {className: "emailholder" + (this.state.emailValid && this.state.dirty ? " valid" : " ") + (!this.state.emailValid && this.state.dirty ? " error" : " ")}, 
+                React.createElement("input", {type: "text", placeholder: "enter email", onFocus: this.focus, onBlur: this.blur, onChange: this.testEmail})
+            ), 
+            React.createElement("div", {className: "passholder" + (this.state.passValid ? " valid" : " ") + (!this.state.passValid && this.state.dirty ? " error" : " ")}, 
+                React.createElement("input", {type: "password", placeholder: "enter password", onFocus: this.focus, onBlur: this.blur, onChange: this.testPass}), 
+                React.createElement("div", {className: "submitBtn" + (this.state.passValid && this.state.emailValid ? " valid" : " "), onClick: this.getToken}, "Submit")
+            )
+        )
     );
   }
 })
 
 module.exports = AuthBox;
 
-},{"react":199}],202:[function(require,module,exports){
+},{"jquery":1,"react":199,"react-tween-state":44}],202:[function(require,module,exports){
 var React = require('react');
 var TokenBox = require('./tokenBox.jsx');
 var AuthBox = require('./authBox.jsx');
@@ -32693,7 +32762,7 @@ var Header = require('./header.jsx');
 
 var Index = React.createClass({displayName: "Index",
   getInitialState: function() {
-    return {windowHeight: null, windowState: null, scrollState:null, token:"", userId:""};
+    return {windowHeight: null, windowState: null, scrollState:null};
   },
   handleResize: function(e) {
       this.setState({windowHeight: e.srcElement.body.scrollTop});
@@ -32713,8 +32782,7 @@ var Index = React.createClass({displayName: "Index",
             React.createElement("img", {src: "images/battleship.png", className: "ship", style: {right:this.state.windowHeight + 'px'}})
           ), 
           React.createElement(Ocean, {windowHeight: this.state.windowHeight, userId: this.state.userId, token: this.state.token, windowRef: this.state.windowState}
-          ), 
-          React.createElement(DeepOcean, {windowHeight: this.state.windowHeight, userId: this.state.userId, token: this.state.token})
+          )
         )
       )
   }
@@ -32725,22 +32793,33 @@ module.exports = Index;
 },{"./deepOcean.jsx":202,"./header.jsx":203,"./ocean.jsx":205,"./page.jsx":206,"react":199}],205:[function(require,module,exports){
 var React = require('react');
 var TokenBox = require('./tokenBox.jsx');
+var AuthBox = require('./authBox.jsx');
 
 var Ocean = React.createClass({displayName: "Ocean",
-
+  getInitialState: function() {
+    return {token:'',userId:''};
+  },
+  handelAjax: function(ajaxRes){
+    this.setState({token:ajaxRes.token,userId:ajaxRes.user_id});
+  },
   render:function(){
     return (
+              React.createElement("div", null, 
               React.createElement("div", {className: "ocean"}, 
                 React.createElement("img", {src: "images/sub.png", className: "sub", style: {left:this.props.windowHeight / 8+ 'vw'}}), 
-                React.createElement(TokenBox, {windowHeight: this.props.windowHeight, windowRef: this.props.windowRef})
+                React.createElement(AuthBox, {windowHeight: this.props.windowHeight, windowRef: this.props.windowRef, handelAjax: this.handelAjax})
+              ), 
+              React.createElement("div", {className: "deepOcean"}, 
+                React.createElement(TokenBox, {userId: this.state.userId, token: this.state.token})
               )
+            )
       )
   }
 });
 
 module.exports = Ocean;
 
-},{"./tokenBox.jsx":207,"react":199}],206:[function(require,module,exports){
+},{"./authBox.jsx":201,"./tokenBox.jsx":207,"react":199}],206:[function(require,module,exports){
 var React = require('react');
 
 var bodyStyle = {
@@ -32756,6 +32835,7 @@ var Page = React.createClass({displayName: "Page",
           React.createElement("title", null, this.props.title)
         ), 
         React.createElement("body", {style: bodyStyle}, 
+          this.props.children, 
           React.createElement("script", {src: "/bundle.js"}), 
           React.createElement("link", {rel: "stylesheet", type: "text/css", href: "/styles.css"}), 
           React.createElement("link", {href: "http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext", rel: "stylesheet", type: "text/css"})
@@ -32769,85 +32849,21 @@ module.exports = Page;
 
 },{"react":199}],207:[function(require,module,exports){
 React = require('react');
-var tweenState = require('react-tween-state');
-var $ = require('jquery');
-
-function validateEmail(email) {
-    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-    return re.test(email);
-}
 
 var TokenBox = React.createClass( {displayName: "TokenBox",
-  mixins: [tweenState.Mixin],
-  getInitialState: function() {
-    return {value: '', valid: false, focused: false, error: false, dirty: false, emailValid: false, passValid: false, windowHeight: 0, topval: 0, scrollOn: false};
-  },
-  setVal: function(event) {
-    this.setState({value: event.target.value});
-  },
-  handleClick: function() {
-    _this = this;
-    this.setState({scrollOn: true});
-    var height = this.state.screenHeight;
-    this.tweenState('topval', {
-          beginValue: this.props.windowHeight,
-          easing: tweenState.easingTypes.easeInOutQuad,
-          duration: 1000,
-          endValue: this.props.windowRef.screen.height  + this.props.windowHeight,
-          onEnd: function() {
-              _this.setState({scrollOn: false});
-          }
-        });
-
-  },
-  testEmail: function(event) {
-    this.setState({dirty: true });
-    var val = event.target.value;
-    var valid = validateEmail(val);
-    this.setState({email: event.target.value, error: !valid, emailValid: valid});
-  },
-  testPass: function(event) {
-    var val = event.target.value;
-    var valid = val.length > 8;
-    this.setState({pass: event.target.value, error: !valid, passValid: valid});
-  },
-  getToken: function() {
-    _this = this;
-    $.ajax({
-      url: '/api/register',
-      method: 'POST',
-      data: { email: this.state.email, password: this.state.pass},
-      dataType: 'json',
-      success: function(data) {
-        console.log(data);
-        _this.setProps({token:data.token, userId:data.user_id});
-        _this.handleClick();
-      },
-      error: function(err) {
-        console.log(err.responseText);
-      },
-    });
+  componentDidMount: function(){
   },
   render: function(){
-    var value = this.state.value;
-    if (this.props.windowRef && this.state.scrollOn ) {
-      var val = this.getTweeningValue('topval')
-      this.props.windowRef.scrollTo(0 ,val);
-    }
     return(
-      React.createElement("div", {className: "focus-box"}, 
-            React.createElement("div", {className: "emailholder" + (this.state.emailValid && this.state.dirty ? " valid" : " ") + (!this.state.emailValid && this.state.dirty ? " error" : " ")}, 
-                React.createElement("input", {type: "text", placeholder: "enter email", onFocus: this.focus, onBlur: this.blur, onChange: this.testEmail})
-            ), 
-            React.createElement("div", {className: "passholder" + (this.state.passValid ? " valid" : " ") + (!this.state.passValid && this.state.dirty ? " error" : " ")}, 
-                React.createElement("input", {type: "password", placeholder: "enter password", onFocus: this.focus, onBlur: this.blur, onChange: this.testPass}), 
-                React.createElement("div", {className: "submitBtn" + (this.state.passValid && this.state.emailValid ? " valid" : " "), onClick: this.getToken}, "Submit")
-            )
-        )
+      React.createElement("div", {className: "auth-box"}, 
+        "Here is your token:", React.createElement("br", null), React.createElement("br", null), 
+        React.createElement("div", {className: "token"}, this.props.token), 
+        React.createElement("div", {className: "userId"}, this.props.userId)
+      )
     );
   }
 })
 
 module.exports = TokenBox;
 
-},{"jquery":1,"react":199,"react-tween-state":44}]},{},[200]);
+},{"react":199}]},{},[200]);

@@ -90,9 +90,28 @@
   border: none;
   font-family: 'Lato-Hairline';
   box-sizing: border-box;
+  word-break: break-word;
 
 }
+.errorholder{
+  left: 25vw;
+  position: absolute;
+  top: 140vh;
+  width: 50vw;
+  padding: 10px;
+  height: 20px;
+  border: none;
+  background: white;
+  text-align: center;
+  font-family: monospace;
+  color:#464646;
+  transition: opacity 1s;
+  opacity: 0;
 
+}
+.errorholder.errorMsg {
+  opacity: 1;
+}
 .focus-box input {
   width: 50vw;
   padding: 10px;
