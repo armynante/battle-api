@@ -88,7 +88,7 @@
   padding: 10px;
   height: 25vh;
   border: none;
-  font-family: 'Lato-Hairline';
+  font-family: 'Cutive Mono';
   box-sizing: border-box;
   word-break: break-word;
 
@@ -180,7 +180,7 @@ input:focus {
 .logoText {
   z-index: 100;
   margin-left: 50px;
-  font-family: 'Lato-Hairline';
+  font-family: 'Lato';
   font-size: 10vh;
   font-weight: 100;
   color: #000000;

@@ -61,7 +61,7 @@ var AuthBox = React.createClass( {
   render: function(){
     var value = this.state.value;
     if (this.props.windowRef && this.state.scrollOn ) {
-      var val = this.getTweeningValue('topval')
+      var val = this.getTweeningValue('topval');
       this.props.windowRef.scrollTo(0 ,val);
     }
     return(
@@ -79,6 +79,6 @@ var AuthBox = React.createClass( {
         </div>
     );
   }
-})
+});
 
 module.exports = AuthBox;
