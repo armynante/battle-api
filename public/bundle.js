@@ -32824,7 +32824,7 @@ module.exports = require('./lib/React');
 
 var Client = require('react-engine/lib/client');
 
-require('./views/authBox.jsx');require('./views/deepOcean.jsx');require('./views/header.jsx');require('./views/index.jsx');require('./views/ocean.jsx');require('./views/page.jsx');require('./views/tokenBox.jsx');
+require('./views/apiDoc.jsx');require('./views/authBox.jsx');require('./views/deepOcean.jsx');require('./views/header.jsx');require('./views/index.jsx');require('./views/ocean.jsx');require('./views/page.jsx');require('./views/tokenBox.jsx');
 
 var options = {
   viewResolver: function(viewName){
@@ -32836,7 +32836,41 @@ document.addEventListener('DOMContentLoaded', function onLoad(){
   Client.boot(options)
 })
 
-},{"./views/authBox.jsx":203,"./views/deepOcean.jsx":204,"./views/header.jsx":205,"./views/index.jsx":206,"./views/ocean.jsx":207,"./views/page.jsx":208,"./views/tokenBox.jsx":209,"react-engine/lib/client":3}],203:[function(require,module,exports){
+},{"./views/apiDoc.jsx":203,"./views/authBox.jsx":204,"./views/deepOcean.jsx":205,"./views/header.jsx":206,"./views/index.jsx":207,"./views/ocean.jsx":208,"./views/page.jsx":209,"./views/tokenBox.jsx":210,"react-engine/lib/client":3}],203:[function(require,module,exports){
+React = require("react");
+Copy = require("react-zeroclipboard");
+
+//				<Copy richText={"curl -H 'X-Auth-Token:' " + this.props.token + "http://battle-api.com/auth"}>
+var ApiDoc = React.createClass({displayName: "ApiDoc",
+	
+  getInitialState: function() {
+    return {};
+  },
+  render: function(){
+		var _this = this;
+    return (
+			React.createElement("div", {className: "api-section"}, 
+			  React.createElement("h2", null, this.props.doc.name), 
+			  React.createElement("div", {className: "api-box"}, this.props.doc.example), 
+				React.createElement("div", {className: "api-description"}, 
+					this.props.doc.description
+				), 
+				React.createElement(Copy, {getText:  function() {
+											 
+											 var string = 'curl -H "x-access-token: ' + _this.props.token + '" http://localhost:808/api/users/' + _this.props.userId + '/games/comp_vs_comp';
+										   return string;
+										 }
+									 }, 
+				  React.createElement("button", null, "Copy")	
+				)
+			)
+		);
+  }
+});
+
+module.exports = ApiDoc;
+
+},{"react":201,"react-zeroclipboard":45}],204:[function(require,module,exports){
 React = require('react');
 var tweenState = require('react-tween-state');
 var $ = require('jquery');
@@ -32922,7 +32956,7 @@ var AuthBox = React.createClass( {displayName: "AuthBox",
 
 module.exports = AuthBox;
 
-},{"jquery":2,"react":201,"react-tween-state":44}],204:[function(require,module,exports){
+},{"jquery":2,"react":201,"react-tween-state":44}],205:[function(require,module,exports){
 var React = require('react');
 var TokenBox = require('./tokenBox.jsx');
 var AuthBox = require('./authBox.jsx');
@@ -32940,7 +32974,7 @@ var DeepOcean = React.createClass({displayName: "DeepOcean",
 
 module.exports = DeepOcean;
 
-},{"./authBox.jsx":203,"./tokenBox.jsx":209,"react":201}],205:[function(require,module,exports){
+},{"./authBox.jsx":204,"./tokenBox.jsx":210,"react":201}],206:[function(require,module,exports){
 React = require('react');
 var tweenState = require('react-tween-state');
 
@@ -32989,7 +33023,7 @@ var Header = React.createClass( {displayName: "Header",
 
 module.exports = Header;
 
-},{"react":201,"react-tween-state":44}],206:[function(require,module,exports){
+},{"react":201,"react-tween-state":44}],207:[function(require,module,exports){
 var React = require('react');
 var Page = require('./page.jsx');
 var Ocean = require('./ocean.jsx');
@@ -33027,28 +33061,62 @@ var Index = React.createClass({displayName: "Index",
 
 module.exports = Index;
 
-},{"./deepOcean.jsx":204,"./header.jsx":205,"./ocean.jsx":207,"./page.jsx":208,"react":201}],207:[function(require,module,exports){
+},{"./deepOcean.jsx":205,"./header.jsx":206,"./ocean.jsx":208,"./page.jsx":209,"react":201}],208:[function(require,module,exports){
+
 var React = require('react');
 var TokenBox = require('./tokenBox.jsx');
 var AuthBox = require('./authBox.jsx');
+var ApiDoc = require('./apiDoc.jsx');
+
+var docs =[
+    {
+        "name": "registration",
+        "route": "/register",
+        "description": "Creates a new user based on email and password params",
+        "example": "$ curl -H \"Content-Type: application/json\" -X POST -d '{\"email\":\"<email>\",\"password\":\"<password>\"}' http://battle-api.com/register"
+    },
+	  {
+        "name": "authorization",
+        "route": "/auth",
+        "description": "This allows the user to authorize their calls with an api token. This token should be placed in the header of all requests as an x-access-token",
+        "example": "$ curl -H \"X-Auth-Token: <Token>\" http://battle-api.com/auth"
+    },
+	  {
+        "name": "new game",
+        "route": "/users/:user_id/games/comp_vs_comp",
+        "description": "Sets up a new game where the computer with play against itself. Two boards will be generated randomly",
+        "example": "$ curl -H \"X-Auth-Token: <Token>\" http://battle-api.com/api/users/:user_id/games/comp_vs_comp"
+    }
+];
 
 var Ocean = React.createClass({displayName: "Ocean",
   getInitialState: function() {
     return {token:'',userId:''};
   },
-  handelAjax: function(ajaxRes){
-    this.setState({token:ajaxRes.token,userId:ajaxRes.user_id});
+	handelAjax: function(ajaxRes){
+		this.setState({token:ajaxRes.token,userId:ajaxRes.userId});
   },
   render:function(){
+		var _this = this;
     return (
               React.createElement("div", null, 
-                 React.createElement("div", {className: "ocean"}, 
-		    React.createElement("img", {src: "images/sub.png", className: "sub", style: {left:this.props.windowHeight / 8+ 'vw'}}), 
-		    React.createElement(AuthBox, {windowHeight: this.props.windowHeight, windowRef: this.props.windowRef, handelAjax: this.handelAjax})
-		  ), 
-		  React.createElement("div", {className: "deepOcean"}, 
-		    React.createElement(TokenBox, {userId: this.state.userId, token: this.state.token})
-		  )		  
+                React.createElement("div", {className: "ocean"}, 
+		              React.createElement("img", {src: "images/sub.png", className: "sub", style: {left:this.props.windowHeight / 8+ 'vw'}}), 
+		              React.createElement(AuthBox, {windowHeight: this.props.windowHeight, windowRef: this.props.windowRef, handelAjax: this.handelAjax})
+		            ), 
+		            React.createElement("div", {className: "deepOcean"}, 
+		              React.createElement(TokenBox, {userId: this.state.userId, token: this.state.token})
+		            ), 
+		            React.createElement("div", {className: "api-ref"}, 
+
+									 docs.map( function(doc,i) {
+										  console.log(_this.state.userId);
+									    return React.createElement(ApiDoc, {token: _this.state.token, userId: _this.state.userId, doc: doc, key: i});
+
+									  })
+									
+		           
+                )
               )
 	      
     );
@@ -33057,7 +33125,7 @@ var Ocean = React.createClass({displayName: "Ocean",
 
 module.exports = Ocean;
 
-},{"./authBox.jsx":203,"./tokenBox.jsx":209,"react":201}],208:[function(require,module,exports){
+},{"./apiDoc.jsx":203,"./authBox.jsx":204,"./tokenBox.jsx":210,"react":201}],209:[function(require,module,exports){
 var React = require('react');
 
 var bodyStyle = {
@@ -33085,7 +33153,7 @@ var Page = React.createClass({displayName: "Page",
 
 module.exports = Page;
 
-},{"react":201}],209:[function(require,module,exports){
+},{"react":201}],210:[function(require,module,exports){
 React = require('react');
 ReactClipboard = require('react-zeroclipboard');
 
@@ -33096,9 +33164,10 @@ var TokenBox = React.createClass( {displayName: "TokenBox",
     return(
       React.createElement("div", {className: "auth-box"}, 
         "Here is your token:", React.createElement("br", null), React.createElement("br", null), 
-        React.createElement("div", {className: "token"}, this.props.token), 
-        React.createElement("div", {className: "userId"}, this.props.userId)	
-      )
+        React.createElement("div", {className: "token"}, this.props.token), React.createElement("br", null), React.createElement("br", null), 
+				"Your user id: ", React.createElement("br", null), React.createElement("br", null), 
+        React.createElement("div", {className: "userId"}, this.props.userId)
+		  )
     );
   }
 });

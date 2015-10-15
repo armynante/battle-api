@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "An api for a node battleship game",
   "main": "server.js",
-    "repository": "https://github.com/armynante/battle-api.git",  
+  "repository": "https://github.com/armynante/battle-api.git",
   "dependencies": {
     "async": "^1.4.2",
     "bcryptjs": "^2.3.0",

@@ -1,4 +1,43 @@
-
+.api-section {
+		width: 50vw;
+		margin-left: 25vw;
+		color:white;
+		margin-bottom:30px;
+}
+.api-section button {
+		width: 100%;
+		border-radius: 3px;
+		border: none;
+		color: white;
+		font-family: "Lato";
+}
+.api-section h2 {
+		font-weight: 100;
+}
+.api-description {
+		margin-bottom: 30px;
+		font-weight: 100;
+}
+.api-box {
+		display:block;
+		BACKGROUND: #272b2d;
+		box-sizing:border-box;
+		color:white;
+		padding: 20px 20px 20px 20px;
+		font-family: "Cutive Mono";
+		border-radius: 3px;
+}
+.api-ref {
+		box-sizing:border-box;
+		padding-top:20vh;
+	  padding-bottom:30vh;
+		font-family: "Lato";
+		position: absolute;
+		TOP: 380vh;
+		BACKGROUND: #2D3134;
+		width: 100vw;
+		margin:-8px;
+}
 .ship {
   position: absolute;
   right: -100px;
@@ -20,7 +59,8 @@
 
 }
 .ocean {
-  background: #4A90E2;
+	overflow-x: hidden;
+	background: #365F8E;
   position: absolute;
   width: 100%;
   height: 240vh;
@@ -30,7 +70,7 @@
 
 .deepOcean {
   position: absolute;
-  background: #2F5B8E;
+  background: #234369;
   width: 100%;
   height: 100vh;
   margin: -8px;
@@ -85,9 +125,12 @@
   left: 25vw;
   background: white;
   box-sizing: border-box;
-  padding: 10px;
-  height: 25vh;
+  padding: 20px;
   border: none;
+	BACKGROUND: #272b2d;
+	color:white;
+	
+	border-radius: 3px;
   font-family: 'Cutive Mono';
   box-sizing: border-box;
   word-break: break-word;
@@ -101,10 +144,10 @@
   padding: 10px;
   height: 20px;
   border: none;
-  background: white;
+  BACKGROUND: #272b2d;
+	color: white;
   text-align: center;
   font-family: monospace;
-  color:#464646;
   transition: opacity 1s;
   opacity: 0;
 
@@ -120,8 +163,10 @@
   border-bottom: solid 4px #c9c9c9;
   transition: border 1s;
   outline: 0;
-
+	BACKGROUND: #272b2d;
+	color:white;
 }
+
 .focus-box .emailholder {
   left: 25vw;
   position: absolute;
@@ -156,7 +201,7 @@ input:focus {
   width: auto;
   color: #ffffff;
   font-size: 24px;
-  background: #9AD45F;
+  background: #2D3134;
   padding: 10px 20px 10px 20px;
   text-decoration: none;
   cursor: pointer;
@@ -165,7 +210,7 @@ input:focus {
   opacity: 0;
 }
 .submitBtn:hover {
-  background: #B8E986;
+		background: #464646;
 }
 
 .submitBtn.valid {

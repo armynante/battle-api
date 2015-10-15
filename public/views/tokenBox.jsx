@@ -8,9 +8,10 @@ var TokenBox = React.createClass( {
     return(
       <div className={"auth-box"}>
         Here is your token:<br/><br/>
-        <div className="token">{this.props.token}</div>
-        <div className="userId">{this.props.userId}</div>	
-      </div>
+        <div className="token">{this.props.token}</div><br/><br/>
+				Your user id: <br/><br/>
+        <div className="userId">{this.props.userId}</div>
+		  </div>
     );
   }
 });

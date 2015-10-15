@@ -133,6 +133,25 @@ router.use(function(req, res, next) {
 
   }
 });
+router.route('/users/:email')
+		.get(function(req, res) {
+				var token = req.body.token || req.query.token || req.headers['x-access-token'];
+				User.findOne({
+						email: req.params.email
+				}, function(err,user) {
+
+						if (err) throw err;
+
+						if (!user) {
+								res.json({success:false, message: "no user with that email"});
+						}
+
+						else if (user) {
+								res.json({succss:true, user_id: user.id});
+						}
+				})
+		});
+				
 router.route('/users/:user_id/games')
 
   .get(function(req, res) {
@@ -188,7 +207,7 @@ router.route('/users/:user_id/games/comp_vs_comp')
           function(callback) {
 
             Board.random(function(err, board) {
-
+								debugger;
                 new_game.ai_board_id = board.id;
                 new_game.ai.board = board.layout;
                 callback(err);
